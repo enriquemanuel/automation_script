@@ -72,6 +72,7 @@ Connecting to serverXX-app001
 - [x] Ability to search all Internal Clients by name and list them
 - [x] Modified the colors to work only with tput instead of HEX
 - [x] Release V1.02
+- [x] Modify the connection for Sutherland users, to connect via IP instead of hostname.
 - [ ] Search in date range
 - [ ] Be more efficient in searches to only search the required directory (archived or not)
 - [ ] Add different logs to search
