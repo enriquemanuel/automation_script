@@ -132,7 +132,7 @@ for h in "${vAPPSIP[@]}";
 do
 	echo "Connecting to ${vAPPS[$vCOUNTER]}"
 	ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto -H $vUSERPK1 /usr/local/blackboard/logs/tomcat/bb-access-log$vDATE | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
-	ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vUSERPK1 /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log$vDATE | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+	ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vUSERPK1 /usr/local/blackboard/asp/*/tomcat/bb-access-log$vDATE | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
 	echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
 	echo "---------------------"
 	echo ""
