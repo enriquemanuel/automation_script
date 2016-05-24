@@ -66,3 +66,17 @@ Input the User PK1 you want to search (example: 284407): 284407
 Connecting to serverXX-app001
 /usr/local/blackboard/logs/tomcat/bb-access-log.2016-05-24.txt:186.204.239.236 _166276_1 [24/May/2016:12:40:02 -0300] "GET /webapps/blackboard/execute/content/file?cmd=view&content_id=_3284407_1&course_id=_125698_1 HTTP/1.1" 302 - "Mozilla/5.0 (Linux; Android 5.1; ASUS_Z00VD Build/LMY47I) AppleWebKit/537.36
 ````
+
+### ToDo's
+- [x] Beta Released 
+- [x] Ability to search all Internal Clients by name and list them
+- [x] Modified the colors to work only with tput instead of HEX
+- [x] Release V1.02
+- [ ] this is an incomplete item
+- [ ] Search in date range
+- [ ] Be more efficient in searches to only search the required directory (archived or not)
+- [ ] Add different logs to search
+- [ ] Maybe store the password locally to not ask for it for every connection
+- [ ] Don't connect to DBs to search
+- [ ] Display logs and allow the user to select them depending if the activity is data_mining
+- [ ] Create new options, maybe check patches, review crons, run restarts, performance reports, etc
