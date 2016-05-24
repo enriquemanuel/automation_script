@@ -81,9 +81,9 @@ rm -rf $vFILENAME
 # Display the list of serverst that we found based on their criteria
 echo "${normal}We found the following Apps to work based on your input: "
 vCOUNTER=1
-for i in "${vAPPS[@]}"
+for servername in "${vAPPS[@]}"
 do
-  echo "$vCOUNTER) $i"
+  echo "$vCOUNTER) $servername"
   vCOUNTER=$[$vCOUNTER +1]
 done
 echo
