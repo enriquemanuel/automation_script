@@ -7,7 +7,7 @@ Since we perform several data mining capabilities to many clients, sometimes che
 ### Example A
 In this example will request for your username and password since it does not have Private / Publick key enabled
 ````bash
-$ ./data_mining.sh 
+$ ./automator.sh 
 
 We are downloading the client list to work on
 
@@ -39,7 +39,7 @@ tempuser@serverXX-app001.mhint's password:
 ### Example B
 In this example will not request for your a password since it does  have Private / Publick key enabled
 ````bash
-$ ./data_mining.sh 
+$ ./automator.sh 
 
 We are downloading the client list to work on
 
