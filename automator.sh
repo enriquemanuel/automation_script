@@ -81,7 +81,7 @@ do
   read -p "Input the above ${red}id number${normal} you want to work on: ${bold}" vARRAYID
   # Set the Working url
   vWORKINGURL=${vOPTIONS[$vARRAYID]}
-  
+
   if  [[ "$vWORKINGURL" == "" ]]; then
     echo "-------------------------------------------------------------------------------------"
     echo "${bold}${red}ERROR:${normal} Invalid option, please try again."
@@ -90,11 +90,6 @@ do
   else
     break
   fi
-  #if [ "$vWORKINGURL" == "" ]; then
-  #	echo "ERROR: Wrong Input, exiting"
-  #else
-  #  exit 0
-  #fi
 done
 
 # Now lets find the App Servers to work
@@ -121,6 +116,8 @@ declare -a vACTIONS=('Data Mining' 'List Patches' 'Execute Audits Listing' 'Revi
 
 # Data Mining Sub Menu
 declare -a vACTION_DATAMINING=('Access Logs' 'Bb Services' 'Bb SQL')
+# other submenus ----
+
 
 # We should have a multiple step process
 # Step 1: List Actions
@@ -140,22 +137,31 @@ echo
 
 # STEP 2: Get the Action selected by the user
 # Check if selected value exists if not make him try again
+vTEMPVAR=0
 until ((0));
 do
   read -p "Input the above ${red}id number${normal} of the action you want to perform: ${bold}" vACTIONID
   var=${vACTIONS[$vACTIONID]}
   for item in "${vACTIONS[@]}"; do
     if [[ $var == "$item" ]]; then
-      echo "$var present in the array"
-      exit 0
+      vTEMPVAR=1
+      continue
     fi
   done
-  echo "please try again"
+  if [[ $vTEMPVAR == 1 ]]; then
+    break
+  else
+    echo "-------------------------------------------------------------------------------------"
+    echo "${bold}${red}ERROR:${normal} Invalid option, please try again."
+    echo "-------------------------------------------------------------------------------------"
+    echo
+  fi
+
 done
 
-# STEP 3: Display sub emnu depending on action
-
-
+# STEP 3: Display sub menu depending on action
+# set the sub Menu
+echo "${vACTIONS[$vACTIONID]}"
 
 
 
