@@ -35,48 +35,73 @@ echo "We are downloading the client list to work on"
 
 # Read the Username for credentials
 echo
-read -p "Please provide your ${red}MH username:${normal}${bold} " vUSERNM
+#read -p "Please provide your ${red}MH username:${normal}${bold} " vUSERNM
 
 # Download file using SCP to current directory
-echo "${normal}We will download the Client Database file into a temporal location..."
-scp -pq $vUSERNM@10.6.11.11:/mnt/asp/utils/bin/include/ops_webtech_data.txt ./
-echo "File downloaded."
+#echo "${normal}We will download the Client Database file into a temporal location..."
+#scp -pq $vUSERNM@10.6.11.11:/mnt/asp/utils/bin/include/ops_webtech_data.txt ./
+#echo "File downloaded."
 
-# Ask for Client Name
-read -p "${normal}What ${red}client${normal}  do you want to work on: ${bold}" vCLIENTNAME
-# Ask for Environment type (Production or Staging or Test)
-read -p "${normal}What ${red}environment${normal} do you want to work on (Production, Staging, Test...): ${bold}" vENVIRONMENT
-echo "${normal}"
-
-# Get unique URLS and ask client which one they want to work on
-vOPTIONS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | awk 'BEGIN { FS = "\t" } ; {print $14}' | sort | uniq))
-
-# Send to the user the list of URLS that we found and make them select one
-echo "${green}We found this options: ${normal}"
-vCOUNTER=0
-for i in "${vOPTIONS[@]}"
+# Security Loop
+# Get Input of Client and Environment
+# If nothing is found then ask again.
+until ((0));
 do
-  echo "$vCOUNTER) $i"
-  vCOUNTER=$[$vCOUNTER +1]
+  # Ask for Client Name
+  read -p "${normal}What ${red}client${normal}  do you want to work on: ${bold}" vCLIENTNAME
+  # Ask for Environment type (Production or Staging or Test)
+  read -p "${normal}What ${red}environment${normal} do you want to work on (Production, Staging, Test...): ${bold}" vENVIRONMENT
+  echo "${normal}"
+
+  vOPTIONS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | awk 'BEGIN { FS = "\t" } ; {print $14}' | sort | uniq))
+
+  if [ ${#vOPTIONS[@]} -eq 0 ]; then
+    echo "-------------------------------------------------------------------------------------"
+    echo "${bold}${red}ERROR:${normal} We could not found any information with your parameters, please try again."
+    echo "-------------------------------------------------------------------------------------"
+    echo
+  else
+    echo "${green}We found this options: ${normal}"
+    vCOUNTER=0
+    for i in "${vOPTIONS[@]}"
+    do
+      echo "$vCOUNTER) $i"
+      vCOUNTER=$[$vCOUNTER +1]
+    done
+    echo
+    break
+  fi
 done
-echo
+
 
 # Ask to select one of the options above
-read -p "Input the above ${red}id number${normal} you want to work on: ${bold}" vARRAYID
-# Set the Working url
-vWORKINGURL=${vOPTIONS[$vARRAYID]}
-
-
-if [ "$vWORKINGURL" == "" ]; then
-	echo "ERROR: Wrong Input, exiting"
-	exit 1
-fi
+until ((0));
+do
+  # Ask to select one of the options above
+  read -p "Input the above ${red}id number${normal} you want to work on: ${bold}" vARRAYID
+  # Set the Working url
+  vWORKINGURL=${vOPTIONS[$vARRAYID]}
+  
+  if  [[ "$vWORKINGURL" == "" ]]; then
+    echo "-------------------------------------------------------------------------------------"
+    echo "${bold}${red}ERROR:${normal} Invalid option, please try again."
+    echo "-------------------------------------------------------------------------------------"
+    echo
+  else
+    break
+  fi
+  #if [ "$vWORKINGURL" == "" ]; then
+  #	echo "ERROR: Wrong Input, exiting"
+  #else
+  #  exit 0
+  #fi
+done
 
 # Now lets find the App Servers to work
 vAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $3}' | sed  's/_/-/g'))
 vAPPSIP=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $1}'))
 # deleting the file so we are always up to date
-rm -rf $vFILENAME
+#rm -rf $vFILENAME
 
 # Display the list of serverst that we found based on their criteria
 echo "${normal}We found the following Apps to work based on your input: "
@@ -91,19 +116,48 @@ echo "${bold}NOTE: ${normal}If the above is not correct, please CTRL+C to exit t
 echo
 
 # Here we will need to define the actions that we will allow the user to perform
+# Generic Action Menu
 declare -a vACTIONS=('Data Mining' 'List Patches' 'Execute Audits Listing' 'Review CRON')
 
-# Ask the user what Log he want to do Data Mining
-# TO BE CREATED
-#declare -a vLOGS=('Access Logs')
-#echo "${normal}What Log do you want to do Data Mining on"
-#vCOUNTER=0
-#for i in "${vLOGS[@]}"
-#do
-#  echo "$vCOUNTER) $i"
-#  vCOUNTER=$[$vCOUNTER +1]
-#done
-#echo
+# Data Mining Sub Menu
+declare -a vACTION_DATAMINING=('Access Logs' 'Bb Services' 'Bb SQL')
+
+# We should have a multiple step process
+# Step 1: List Actions
+# Step 2: Confirm Action
+# Step 3: Display submenu options depending on the action
+# Step 4: Confirm Sub action
+
+# STEP 1: Display the list of possible actions
+echo "${normal}What ${red}Action${normal} would you like to execute"
+vCOUNTER=0
+for action in "${vACTIONS[@]}"
+do
+  echo "$vCOUNTER) $action"
+  vCOUNTER=$[$vCOUNTER +1]
+done
+echo
+
+# STEP 2: Get the Action selected by the user
+# Check if selected value exists if not make him try again
+until ((0));
+do
+  read -p "Input the above ${red}id number${normal} of the action you want to perform: ${bold}" vACTIONID
+  var=${vACTIONS[$vACTIONID]}
+  for item in "${vACTIONS[@]}"; do
+    if [[ $var == "$item" ]]; then
+      echo "$var present in the array"
+      exit 0
+    fi
+  done
+  echo "please try again"
+done
+
+# STEP 3: Display sub emnu depending on action
+
+
+
+
 
 # Ask for a specific date in regular expresion to search for
 vCURDATE=`date +%Y-%m-%d`
