@@ -62,8 +62,8 @@ done
 echo
 
 # Ask to select one of the options above
-read -p "Input the above ${red}id number${normal} you want to work on: ${bold}" vARRAYID 
-# Set the Working url 
+read -p "Input the above ${red}id number${normal} you want to work on: ${bold}" vARRAYID
+# Set the Working url
 vWORKINGURL=${vOPTIONS[$vARRAYID]}
 
 
@@ -72,7 +72,7 @@ if [ "$vWORKINGURL" == "" ]; then
 	exit 1
 fi
 
-# Now lets find the App Servers to work 
+# Now lets find the App Servers to work
 vAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $3}' | sed  's/_/-/g'))
 vAPPSIP=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $1}'))
 # deleting the file so we are always up to date
@@ -88,9 +88,12 @@ do
 done
 echo
 echo "${bold}NOTE: ${normal}If the above is not correct, please CTRL+C to exit the app and restart it."
-echo 
+echo
 
-# Ask the user what Log he want to do Data Mining 
+# Here we will need to define the actions that we will allow the user to perform
+declare -a vACTIONS=('Data Mining' 'List Patches' 'Execute Audits Listing' 'Review CRON')
+
+# Ask the user what Log he want to do Data Mining
 # TO BE CREATED
 #declare -a vLOGS=('Access Logs')
 #echo "${normal}What Log do you want to do Data Mining on"
@@ -109,7 +112,7 @@ read -p "Input the ${red}Date${normal} you want to search (YYYY-MM-DD): ${bold}"
 echo "${normal}"
 
 
-# Set up the path and the date to search for. 
+# Set up the path and the date to search for.
 # Since we don't know when the archived logs occurred, we are searching in the archived and current locations
 vDATE=""
 vPATH=""
@@ -138,4 +141,3 @@ do
 	echo ""
 	vCOUNTER=$[$vCOUNTER +1]
 done
-
