@@ -62,8 +62,8 @@ done
 echo
 
 # Ask to select one of the options above
-read -p "Input the above ${red}id number${normal} you want to work on: ${bold}" vARRAYID 
-# Set the Working url 
+read -p "Input the above ${red}id number${normal} you want to work on: ${bold}" vARRAYID
+# Set the Working url
 vWORKINGURL=${vOPTIONS[$vARRAYID]}
 
 
@@ -72,7 +72,7 @@ if [ "$vWORKINGURL" == "" ]; then
 	exit 1
 fi
 
-# Now lets find the App Servers to work 
+# Now lets find the App Servers to work
 vAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $3}' | sed  's/_/-/g'))
 vAPPSIP=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $1}'))
 # deleting the file so we are always up to date
@@ -88,9 +88,9 @@ do
 done
 echo
 echo "${bold}NOTE: ${normal}If the above is not correct, please CTRL+C to exit the app and restart it."
-echo 
+echo
 
-# Ask the user what Log he want to do Data Mining 
+# Ask the user what Log he want to do Data Mining
 # TO BE CREATED
 #declare -a vLOGS=('Access Logs')
 #echo "${normal}What Log do you want to do Data Mining on"
@@ -109,14 +109,14 @@ read -p "Input the ${red}Date${normal} you want to search (YYYY-MM-DD): ${bold}"
 echo "${normal}"
 
 
-# Set up the path and the date to search for. 
+# Set up the path and the date to search for.
 # Since we don't know when the archived logs occurred, we are searching in the archived and current locations
 vDATE=""
 vPATH=""
-if [[ $vCURDATE -eq $vSTARTDATE ]]; then
+if [[ "$vCURDATE" == "$vSTARTDATE" ]]; then
 	vDATE="."$vCURDATE".txt"
 else
-	vDATE="."$vCURDATE".txt.gz"
+	vDATE="."$vSTARTDATE".txt.gz"
 fi
 
 
@@ -131,11 +131,10 @@ vCOUNTER=0
 for h in "${vAPPSIP[@]}";
 do
 	echo "Connecting to ${vAPPS[$vCOUNTER]}"
-	ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto -H $vUSERPK1 /usr/local/blackboard/logs/tomcat/bb-access-log$vDATE | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
-	ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vUSERPK1 /usr/local/blackboard/asp/*/tomcat/bb-access-log$vDATE | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+	#ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vUSERPK1 /usr/local/blackboard/logs/tomcat/bb-access-log$vDATE | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+	ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vUSERPK1 /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log$vDATE | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
 	echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
 	echo "---------------------"
 	echo ""
 	vCOUNTER=$[$vCOUNTER +1]
 done
-
