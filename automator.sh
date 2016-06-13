@@ -1,28 +1,22 @@
 #!/bin/sh
+#title           :automator.sh
+#description     :This script will do Data mining on the Tomcat Access Logs.
+#author		       :enriquemanuel (Enrique Valenzuela)
+#date            :2016-06-13
+#version         :0.8
+#usage           :sh automator.sh
 
-## Enhancement requests
-## - Add a debug mode.
+#==============================================================================
 
-## ToDo's
-## -------------------
-## Search in date range
-## Be more efficient in searches to only search the required directory (archived or not)
-## Add different logs to search
-## Maybe store the password locally to not ask for it for every connection
-## Don't connect to DBs to search
-
-## Done
-## -------------------
-## 2016-06-13 - Removed the DB from the Data Mining 
-## 2016-06-13 - Added Date Range
-## 2016-05-24 - Modified the colors to work only with tput instead of HEX
-## 2016-05-24 - Release V1.02
-## 2016-05-24 - Ability to search all Opsmart Clients and list them
-## 2016-05-23 - Ability to connect using user provided credentials. Not storing them in any way.
 ## 2016-05-20 - Beta release date. Written by Enrique Valenzuela
 
 
 ## Before we get started, make sure this is being run from a writeable location.
+cwd=`pwd`
+if [ ! -w "$cwd" ]; then
+  echo "${red}${bold}Error:${normal} Current Directory is not writeable by you."
+  exit 1
+fi
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -143,7 +137,7 @@ else
 fi
 
 # Ask what user pk1 to search for
-read -p "Input the ${red}User PK1${normal} you want to search (example: 284407): ${bold}" vUSERPK1
+read -p "Input the ${red}Information String${normal} you want to search: ${bold}" vSTRINGSEARCH
 echo "${normal}"
 
 # Connect to server
@@ -151,8 +145,8 @@ vCOUNTER=0
 for h in "${vAPPSIP[@]}"; do
   echo "Connmecting to ${vAPPS[$vCOUNTER]}"
   for day in "${datearrange[@]}"; do
-    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vUSERPK1 /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
-    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vUSERPK1 /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
   done
   echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
 done
