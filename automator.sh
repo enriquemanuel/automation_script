@@ -45,11 +45,11 @@ function trap2exit (){
 
 # Read the Username for credentials
 echo
-#read -p "Please provide your ${red}MH username:${normal}${bold} " vUSERNM
+read -p "Please provide your ${red}MH username:${normal}${bold} " vUSERNM
 
 # Download file using SCP to current directory
 echo "${normal}We will download the Client Database file into a temporal location..."
-#scp -pq $vUSERNM@10.6.11.11:/mnt/asp/utils/bin/include/ops_webtech_data.txt ./
+scp -pq $vUSERNM@10.6.11.11:/mnt/asp/utils/bin/include/ops_webtech_data.txt ./
 echo "File downloaded."
 
 # Ask for Client Name
@@ -85,7 +85,6 @@ fi
 # Now lets find the App Servers to work
 vTEMPAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $3}' | sed  's/_/-/g'))
 
-
 # remove DB from list of apps
 declare -a vAPPS=();
 for h in "${vTEMPAPPS[@]}"; do
@@ -97,7 +96,6 @@ declare -a vAPPSIP=()
 for eachapp in "${vAPPS[@]}"; do
     appname=$(echo $eachapp | sed 's/-/_/g')
     vAPPSIP+=$(grep --color=auto "$appname" ops_webtech_data.txt | awk 'BEGIN { FS="\t"}; {print $1}')
-
 done
 
 # deleting the file so we are always up to date
@@ -106,8 +104,7 @@ rm -rf $vFILENAME
 # Display the list of serverst that we found based on their criteria
 echo "${normal}We found the following Apps to work based on your input: "
 vCOUNTER=1
-for servername in "${vAPPS[@]}"
-do
+for servername in "${vAPPS[@]}"; do
   echo "$vCOUNTER) $servername"
   vCOUNTER=$[$vCOUNTER +1]
 done
