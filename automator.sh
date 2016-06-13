@@ -15,7 +15,7 @@
 cwd=`pwd`
 if [ ! -w "$cwd" ]; then
   echo "${red}${bold}Error:${normal} Current Directory is not writeable by you."
-  exit 1
+  exit 0
 fi
 
 bold=$(tput bold)
