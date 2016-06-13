@@ -13,6 +13,8 @@
 
 ## Done
 ## -------------------
+## 2016-06-13 - Removed the DB from the Data Mining 
+## 2016-06-13 - Added Date Range
 ## 2016-05-24 - Modified the colors to work only with tput instead of HEX
 ## 2016-05-24 - Release V1.02
 ## 2016-05-24 - Ability to search all Opsmart Clients and list them
