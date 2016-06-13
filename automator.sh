@@ -32,14 +32,24 @@ declare -a vDATERANGE=()
 echo
 echo "We are downloading the client list to work on"
 
+# some back up functions
+function trap2exit (){
+
+  echo "\n${normal}Exiting...";
+  if [[ -f $vFILENAME ]]; then
+    rm -rf $vFILENAME
+  fi
+  exit 0;
+}
+
 
 # Read the Username for credentials
 echo
-read -p "Please provide your ${red}MH username:${normal}${bold} " vUSERNM
+#read -p "Please provide your ${red}MH username:${normal}${bold} " vUSERNM
 
 # Download file using SCP to current directory
 echo "${normal}We will download the Client Database file into a temporal location..."
-scp -pq $vUSERNM@10.6.11.11:/mnt/asp/utils/bin/include/ops_webtech_data.txt ./
+#scp -pq $vUSERNM@10.6.11.11:/mnt/asp/utils/bin/include/ops_webtech_data.txt ./
 echo "File downloaded."
 
 # Ask for Client Name
@@ -73,8 +83,23 @@ if [ "$vWORKINGURL" == "" ]; then
 fi
 
 # Now lets find the App Servers to work
-vAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $3}' | sed  's/_/-/g'))
-vAPPSIP=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $1}'))
+vTEMPAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGURL | awk 'BEGIN { FS="\t"}; {print $3}' | sed  's/_/-/g'))
+
+
+# remove DB from list of apps
+declare -a vAPPS=();
+for h in "${vTEMPAPPS[@]}"; do
+  if [[ ${h} != *"db0"* ]]; then
+    vAPPS+=($h);
+  fi
+done
+declare -a vAPPSIP=()
+for eachapp in "${vAPPS[@]}"; do
+    appname=$(echo $eachapp | sed 's/-/_/g')
+    vAPPSIP+=$(grep --color=auto "$appname" ops_webtech_data.txt | awk 'BEGIN { FS="\t"}; {print $1}')
+
+done
+
 # deleting the file so we are always up to date
 rm -rf $vFILENAME
 
@@ -90,18 +115,6 @@ echo
 echo "${bold}NOTE: ${normal}If the above is not correct, please CTRL+C to exit the app and restart it."
 echo
 
-# Ask the user what Log he want to do Data Mining
-# TO BE CREATED
-#declare -a vLOGS=('Access Logs')
-#echo "${normal}What Log do you want to do Data Mining on"
-#vCOUNTER=0
-#for i in "${vLOGS[@]}"
-#do
-#  echo "$vCOUNTER) $i"
-#  vCOUNTER=$[$vCOUNTER +1]
-#done
-#echo
-
 # Ask for a specific date in regular expresion to search for
 vCURDATE=`date +%Y-%m-%d`
 read -p "Input the ${red}Start Date${normal} you want to search (YYYY-MM-DD) (e.g: lower than end date): ${bold}" vSTARTDATE
@@ -109,6 +122,7 @@ echo "${normal}"
 read -p "Input the ${red}End Date${normal} you want to search (YYYY-MM-DD) (e.g: higher than start date): ${bold}" vENDDATE
 echo "${normal}"
 
+# Create Date Ranges
 if date -v 1d > /dev/null 2>&1; then
   currentDateTs=$(date -j -f "%Y-%m-%d" $vSTARTDATE "+%s")
   endDateTs=$(date -j -f "%Y-%m-%d" $vENDDATE "+%s")
@@ -129,19 +143,6 @@ else
   done
 fi
 
-
-
-# Set up the path and the date to search for.
-# Since we don't know when the archived logs occurred, we are searching in the archived and current locations
-vDATE=""
-vPATH=""
-if [[ "$vCURDATE" == "$vSTARTDATE" ]]; then
-	vDATE="."$vCURDATE".txt"
-else
-	vDATE="."$vSTARTDATE".txt.gz"
-fi
-
-
 # Ask what user pk1 to search for
 read -p "Input the ${red}User PK1${normal} you want to search (example: 284407): ${bold}" vUSERPK1
 echo "${normal}"
@@ -156,11 +157,3 @@ for h in "${vAPPSIP[@]}"; do
   done
   echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
 done
-
-#for i in "${dateRange[@]}"; do
-  #echo $i
-
-  #for h in "${vAPPSIP[@]}"; do
-  #    echo $h
-  #  done
-#done
