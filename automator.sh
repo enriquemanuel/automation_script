@@ -102,32 +102,6 @@ echo
 #done
 #echo
 
-function getDateRange () {
-
-
-  if date -v 1d > /dev/null 2>&1; then
-    currentDateTs=$(date -j -f "%Y-%m-%d" $1 "+%s")
-    endDateTs=$(date -j -f "%Y-%m-%d" $2 "+%s")
-    offset=86400
-
-    while [ "$currentDateTs" -le "$endDateTs" ]
-    do
-      date=$(date -j -f "%s" $currentDateTs "+%Y-%m-%d")
-
-      vDATERANGE+=($date)
-      currentDateTs=$(($currentDateTs+$offset))
-    done
-  else
-    d=$1
-    while [ "$d" != "$2" ]; do
-      vDATERANGE+=($d)
-      d=$(date -I -d "$d + 1 day")
-    done
-  fi
-
-
-
-}
 # Ask for a specific date in regular expresion to search for
 vCURDATE=`date +%Y-%m-%d`
 read -p "Input the ${red}Start Date${normal} you want to search (YYYY-MM-DD) (e.g: lower than end date): ${bold}" vSTARTDATE
@@ -135,9 +109,26 @@ echo "${normal}"
 read -p "Input the ${red}End Date${normal} you want to search (YYYY-MM-DD) (e.g: higher than start date): ${bold}" vENDDATE
 echo "${normal}"
 
-echo ${#vDATERANGE[@]}
-echo ${vDATERANGE[@]}
-exit 1
+if date -v 1d > /dev/null 2>&1; then
+  currentDateTs=$(date -j -f "%Y-%m-%d" $vSTARTDATE "+%s")
+  endDateTs=$(date -j -f "%Y-%m-%d" $vENDDATE "+%s")
+  offset=86400
+
+  while [ "$currentDateTs" -le "$endDateTs" ]
+  do
+    date=$(date -j -f "%s" $currentDateTs "+%Y-%m-%d")
+
+    datearrange+=($date)
+    currentDateTs=$(($currentDateTs+$offset))
+  done
+else
+  d=$1
+  while [ "$d" != "$vENDDATE" ]; do
+    datearrange+=('$d')
+    d=$(date -I -d "$d + 1 day")
+  done
+fi
+
 
 
 # Set up the path and the date to search for.
@@ -158,10 +149,12 @@ echo "${normal}"
 # Connect to server
 vCOUNTER=0
 for h in "${vAPPSIP[@]}"; do
-  for i in "${dateRange[@]}"; do
-    echo $h - $i
-    echo ""
+  echo "Connmecting to ${vAPPS[$vCOUNTER]}"
+  for day in "${datearrange[@]}"; do
+    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vUSERPK1 /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vUSERPK1 /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
   done
+  echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
 done
 
 #for i in "${dateRange[@]}"; do
