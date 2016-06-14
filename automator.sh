@@ -1,7 +1,7 @@
 #!/bin/sh
 #title           :automator.sh
 #description     :This script will do Data mining on the Tomcat Access Logs.
-#author		       :enriquemanuel (Enrique Valenzuela)
+#author		       :enriquemanuel.me (Enrique Valenzuela) - https://github.com/enriquemanuel/
 #date            :2016-06-13
 #version         :0.8
 #usage           :sh automator.sh
@@ -9,7 +9,6 @@
 #==============================================================================
 
 ## 2016-05-20 - Beta release date. Written by Enrique Valenzuela
-
 
 ## Before we get started, make sure this is being run from a writeable location.
 cwd=`pwd`
@@ -91,8 +90,13 @@ done
 declare -a vAPPSIP=()
 for eachapp in "${vAPPS[@]}"; do
     appname=$(echo $eachapp | sed 's/-/_/g')
-    vAPPSIP+=$(grep --color=auto "$appname" ops_webtech_data.txt | awk 'BEGIN { FS="\t"}; {print $1}')
+    tempip=$(grep --color=auto "$appname" ops_webtech_data.txt | awk 'BEGIN { FS="\t"}; {print $1}')
+    vAPPSIP+=($tempip)
+
 done
+
+
+
 
 # deleting the file so we are always up to date
 rm -rf $vFILENAME
@@ -149,4 +153,5 @@ for h in "${vAPPSIP[@]}"; do
     ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
   done
   echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
+  vCOUNTER=$[$vCOUNTER +1]
 done
