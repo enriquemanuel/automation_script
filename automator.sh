@@ -141,7 +141,7 @@ else
 fi
 
 # Ask what user pk1 to search for
-read -p "Input the ${red}Information String${normal} you want to search: ${bold}" vSTRINGSEARCH
+read -p "Input the ${red}Information String${normal} you want to search (wrap in double quotes if using special characters): ${bold}" vSTRINGSEARCH
 echo "${normal}"
 
 # Connect to server
@@ -149,9 +149,10 @@ vCOUNTER=0
 for h in "${vAPPSIP[@]}"; do
   echo "Connmecting to ${vAPPS[$vCOUNTER]}"
   for day in "${datearrange[@]}"; do
-    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
-    ssh  -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+    ssh -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+    ssh -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
   done
   echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
-  vCOUNTER=$[$vCOUNTER +1]
+  echo ""
+  vCOUNTER=$[$vCOUNTER+1]
 done
