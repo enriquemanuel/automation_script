@@ -173,8 +173,6 @@ until ((0)); do
   fi
 done
 
-vCURRENTDATE=`date +%Y-%m-%d`
-
 # Create Date Ranges
 if date -v 1d > /dev/null 2>&1; then
   currentDateTs=$(date -j -f "%Y-%m-%d" $vSTARTDATE "+%s")
@@ -195,7 +193,7 @@ else
   done
 fi
 
-# Ask what user pk1 to search for
+# Ask what string to search for
 read -p "Input the ${red}Information String${normal} you want to search (wrap in double quotes if using special characters): ${bold}" vSTRINGSEARCH
 echo "${normal}"
 
@@ -208,7 +206,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   # Do not save to file
   vCOUNTER=0
   for h in "${vAPPSIP[@]}"; do
-    echo "Connmecting to ${vAPPS[$vCOUNTER]}"
+    echo "Connecting to ${vAPPS[$vCOUNTER]}"
     for day in "${datearrange[@]}"; do
       ssh -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
       ssh -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
@@ -219,8 +217,9 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   done
 else
   # Save to file
+  currentdate=`date +%Y-%m-%d`
   clientname="$(echo "${vCLIENTNAME}" | tr -d '[[:space:]]')"
-  filename="automator-$vUSERNM-$vCURRENTDATE-$clientname.log"
+  filename="automator-$vUSERNM-$currentdate-$clientname.log"
   # Connect to server
   echo
   vCOUNTER=0
@@ -233,6 +232,7 @@ else
     done
     echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
     echo "Disconnecting from ${vAPPS[$vCOUNTER]}" >> $filename
+    echo "" >> $filename
     echo ""
     vCOUNTER=$[$vCOUNTER+1]
   done
