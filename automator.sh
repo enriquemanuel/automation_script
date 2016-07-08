@@ -40,6 +40,7 @@ function trap2exit (){
 
 
 # Read the Username for credentials
+trap trap2exit SIGHUP SIGINT SIGTERM
 echo
 read -p "Please provide your ${red}MH username:${normal}${bold} " vUSERNM
 
