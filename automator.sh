@@ -172,7 +172,7 @@ until ((0)); do
   fi
 done
 
-
+vCURRENTDATE=`date +%Y-%m-%d`
 
 # Create Date Ranges
 if date -v 1d > /dev/null 2>&1; then
@@ -183,7 +183,6 @@ if date -v 1d > /dev/null 2>&1; then
   while [ "$currentDateTs" -le "$endDateTs" ]
   do
     date=$(date -j -f "%s" $currentDateTs "+%Y-%m-%d")
-
     datearrange+=($date)
     currentDateTs=$(($currentDateTs+$offset))
   done
@@ -195,21 +194,45 @@ else
   done
 fi
 
-# new comment
-
 # Ask what user pk1 to search for
 read -p "Input the ${red}Information String${normal} you want to search (wrap in double quotes if using special characters): ${bold}" vSTRINGSEARCH
 echo "${normal}"
 
-# Connect to server
-vCOUNTER=0
-for h in "${vAPPSIP[@]}"; do
-  echo "Connmecting to ${vAPPS[$vCOUNTER]}"
-  for day in "${datearrange[@]}"; do
-    ssh -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}' >> ~/Desktop/tmp.log
-    ssh -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}' >> ~/Desktop/tmp.log
+# Ask if the client wants to save to file or not
+read -p "Do you ${bold}${red}want to save${normal} the output to a file? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  echo
+  # Connect to server
+  # Do not save to file
+  vCOUNTER=0
+  for h in "${vAPPSIP[@]}"; do
+    echo "Connmecting to ${vAPPS[$vCOUNTER]}"
+    for day in "${datearrange[@]}"; do
+      ssh -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+      ssh -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}'
+    done
+    echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
+    echo ""
+    vCOUNTER=$[$vCOUNTER+1]
   done
-  echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
-  echo ""
-  vCOUNTER=$[$vCOUNTER+1]
-done
+else
+  # Save to file
+  clientname="$(echo "${vCLIENTNAME}" | tr -d '[[:space:]]')"
+  filename="automator-$vUSERNM-$vCURRENTDATE-$clientname.log"
+  # Connect to server
+  echo
+  vCOUNTER=0
+  for h in "${vAPPSIP[@]}"; do
+    echo "Connecting to ${vAPPS[$vCOUNTER]}"
+    echo "Connecting to ${vAPPS[$vCOUNTER]}" >> $filename
+    for day in "${datearrange[@]}"; do
+      ssh -o StrictHostKeyChecking=no $vUSERNM@$h grep --color=auto -H $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}' >> $filename
+      ssh -o StrictHostKeyChecking=no $vUSERNM@$h zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz | awk '{print $1, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18}' >> $filename
+    done
+    echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
+    echo "Disconnecting from ${vAPPS[$vCOUNTER]}" >> $filename
+    echo ""
+    vCOUNTER=$[$vCOUNTER+1]
+  done
+fi
