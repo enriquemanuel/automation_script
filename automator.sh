@@ -133,31 +133,42 @@ echo
 echo "${bold}NOTE: ${normal}If the above is not correct, please CTRL+C to exit the app and restart it."
 echo
 
-
-# Ask for a specific date in regular expresion to search for
+# this outer check is to validate if the start date is lower than the end date
 until ((0)); do
-  read -p "Input the ${red}Start Date${normal} you want to search (YYYY-MM-DD) (e.g: lower than end date): ${bold}" vSTARTDATE
-  echo "${normal}"
-  if [[ $vSTARTDATE =~ ^[0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$ ]]; then
-    break
-  else
+  # Ask for Start date
+  until ((0)); do
+    read -p "Input the ${red}Start Date${normal} you want to search (YYYY-MM-DD) (e.g: lower than end date): ${bold}" vSTARTDATE
+    echo "${normal}"
+    if [[ $vSTARTDATE =~ ^[0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$ ]]; then
+      break
+    else
+      echo "${normal} -------------------------------------------------------------------------------------"
+      echo "${bold}${red}ERROR:${normal} Invalid Start date, please try again."
+      echo "-------------------------------------------------------------------------------------"
+      echo
+    fi
+  done
+  # Ask for End date
+  until ((0)); do
+    read -p "Input the ${red}End Date${normal} you want to search (YYYY-MM-DD) (e.g: higher than start date): ${bold}" vENDDATE
+    echo "${normal}"
+    if [[ $vENDDATE =~ ^[0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$ ]]; then
+      break
+    else
+      echo "${normal} -------------------------------------------------------------------------------------"
+      echo "${bold}${red}ERROR:${normal} Invalid End date, please try again."
+      echo "-------------------------------------------------------------------------------------"
+      echo
+    fi
+  done
+  # check if start date is lower than end date
+  if [[ "$vSTARTDATE" > "$vENDDATE" ]]; then
     echo "${normal} -------------------------------------------------------------------------------------"
-    echo "${bold}${red}ERROR:${normal} Invalid Start date, please try again."
+    echo "${bold}${red}ERROR:${normal} Start Date is higher than End Date"
     echo "-------------------------------------------------------------------------------------"
     echo
-  fi
-done
-
-until ((0)); do
-  read -p "Input the ${red}End Date${normal} you want to search (YYYY-MM-DD) (e.g: higher than start date): ${bold}" vENDDATE
-  echo "${normal}"
-  if [[ $vENDDATE =~ ^[0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$ ]]; then
-    break
   else
-    echo "${normal} -------------------------------------------------------------------------------------"
-    echo "${bold}${red}ERROR:${normal} Invalid End date, please try again."
-    echo "-------------------------------------------------------------------------------------"
-    echo
+    break
   fi
 done
 
