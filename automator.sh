@@ -202,7 +202,20 @@ read -p "Do you ${bold}${red}want to save${normal} the output to a file? " -n 1 
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   echo
-  # Connect to server
+
+  # Create a header for easy readability
+  echo "=============================================================================="
+  echo
+  echo "User: $vUSERNM"
+  echo "Client Name: $vCLIENTNAME"
+  echo "Client Environment: $vENVIRONMENT"
+  echo "Client Servers: ${vAPPS[@]}"
+  echo "Start Date: $vSTARTDATE"
+  echo "End Date: $vENDDATE"
+  echo "Search String: $vSTRINGSEARCH"
+  echo
+  echo "=============================================================================="
+  echo
   # Do not save to file
   vCOUNTER=0
   for h in "${vAPPSIP[@]}"; do
@@ -220,6 +233,26 @@ else
   currentdate=`date +%Y-%m-%d`
   clientname="$(echo "${vCLIENTNAME}" | tr -d '[[:space:]]')"
   filename="automator-$vUSERNM-$currentdate-$clientname.log"
+
+  # Continue file creation and all search
+  if [ -f $filename ]; then
+    filename="automator-$vUSERNM-$currentdate-$clientname-1.log"
+  fi
+
+  # Create a header for easy replication
+  echo "==============================================================================" >> $filename
+  echo >> $filename
+  echo "User: $vUSERNM" >> $filename
+  echo "Client Name: $vCLIENTNAME" >> $filename
+  echo "Client Environment: $vENVIRONMENT" >> $filename
+  echo "Client Servers: ${vAPPS[@]}" >> $filename
+  echo "Start Date: $vSTARTDATE" >> $filename
+  echo "End Date: $vENDDATE" >> $filename
+  echo "Search String: $vSTRINGSEARCH" >> $filename
+  echo >> $filename
+  echo "==============================================================================" >> $filename
+  echo >> $filename
+
   # Connect to server
   echo
   vCOUNTER=0
