@@ -26,7 +26,7 @@ green=$(tput setaf 2)
 vFILENAME='ops_webtech_data.txt'
 declare -a vDATERANGE=()
 echo
-echo "We are downloading the client list to work on"
+echo "We are downloading the client list to work on, please provide a second."
 
 # some back up functions
 function trap2exit (){
@@ -50,6 +50,8 @@ scp -pq $vUSERNM@10.6.11.11:/mnt/asp/utils/bin/include/ops_webtech_data.txt ./
 echo
 echo ">>> File downloaded ..."
 echo
+
+
 
 # Security Loop
 # Get Input of Client and Environment
@@ -230,7 +232,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   done
 else
   # Save to file
-  currentdate=`date +%Y-%m-%d`
+  currentdate=`date +%Y-%m-%d-%k_%M_%S`
   clientname="$(echo "${vCLIENTNAME}" | tr -d '[[:space:]]')"
   filename="automator-$vUSERNM-$currentdate-$clientname.log"
 
