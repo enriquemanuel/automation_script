@@ -188,9 +188,9 @@ if date -v 1d > /dev/null 2>&1; then
     currentDateTs=$(($currentDateTs+$offset))
   done
 else
-  d=$1
+  d=$vSTARTDATE
   while [ "$d" != "$vENDDATE" ]; do
-    datearrange+=('$d')
+    datearrange+=($d)
     d=$(date -I -d "$d + 1 day")
   done
 fi
